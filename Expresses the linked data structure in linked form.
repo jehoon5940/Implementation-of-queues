@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// 큐의 노드를 정의합니다.
+typedef struct QueueNode {
+    int data;
+    struct QueueNode* next;
+} QueueNode;
+
+// 큐를 나타내는 구조체를 정의합니다.
+typedef struct {
+    QueueNode* front; // 큐의 맨 앞을 가리키는 포인터
+    QueueNode* rear;  // 큐의 맨 뒤를 가리키는 포인터
+} Queue;
+
+// 큐를 초기화하는 함수
+void initializeQueue(Queue* q) {
+    q->front = q->rear = NULL;
+}
+
+// 큐가 비어있는지 확인하는 함수
+int isQueueEmpty(Queue* q) {
+    return q->front == NULL;
+}
+
+// 큐에 데이터를 삽입하는 함수
+void enqueue(Queue* q, int data) {
+    // 새로운 노드를 동적으로 할당합니다.
+    QueueNode* newNode = (QueueNode*)malloc(sizeof(QueueNode));
+    if (newNode == NULL) {
+        printf("메모리 할당 오류\n");
+        return;
+    }
+    newNode->data = data;
+    newNode->next = NULL;
+
+    // 큐가 비어있는 경우
+    if (isQueueEmpty(q)) {
+        q->front = q->rear = newNode;
+    } else {
+        // 기존의 마지막 노드의 next에 새로운 노드를 연결합니다.
+        q->rear->next = newNode;
+        // 새로운 노드를 큐의 맨 뒤로 설정합니다.
+        q->rear = newNode;
+    }
+}
+
+// 큐에서 데이터를 삭제하고 반환하는 함수
+int dequeue(Queue* q) {
+    // 큐가 비어있는지 확인합니다.
+    if (isQueueEmpty(q)) {
+        printf("큐가 비어있습니다.\n");
+        return -1; // 임의의 값 반환
+    }
+
+    // 삭제할 노드를 front로 지정하고 데이터를 얻습니다.
+    QueueNode* temp = q->front;
+    int data = temp->data;
+
+    // front를 다음 노드로 이동시킵니다.
+    q->front = q->front->next;
+
+    // 삭제한 노드의 메모리를 해제합니다.
+    free(temp);
+
+    // 만약 큐가 비었다면 rear도 NULL로 설정합니다.
+    if (q->front == NULL) {
+        q->rear = NULL;
+    }
+
+    return data;
+}
+
+// 큐의 모든 데이터를 출력하는 함수
+void displayQueue(Queue* q) {
+    if (isQueueEmpty(q)) {
+        printf("큐가 비어있습니다.\n");
+        return;
+    }
+    printf("큐의 내용: ");
+    QueueNode* current = q->front;
+    while (current != NULL) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    Queue q;
+    initializeQueue(&q);
+
+    // 큐에 데이터를 삽입합니다.
+    enqueue(&q, 10);
+    enqueue(&q, 20);
+    enqueue(&q, 30);
+    enqueue(&q, 40);
+
+    // 큐의 내용을 출력합니다.
+    displayQueue(&q);
+
+    // 큐에서 데이터를 삭제하고 출력합니다.
+    printf("삭제된 데이터: %d\n", dequeue(&q));
+    printf("삭제된 데이터: %d\n", dequeue(&q));
+
+    // 큐의 내용을 다시 출력합니다.
+    displayQueue(&q);
+
+    return 0;
+}
