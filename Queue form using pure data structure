@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_SIZE 3
+
+typedef struct {
+    int items[MAX_SIZE];
+    int front;
+    int rear;
+} Queue;
+
+void initQueue(Queue *q) {
+    q->front = 0;
+    q->rear = -1;
+}
+
+bool isFull(Queue *q) {
+    return q->rear == MAX_SIZE - 1;
+}
+
+bool isEmpty(Queue *q) {
+    return q->rear < q->front;
+}
+
+bool enqueue(Queue *q, int item) {
+    if (isFull(q)) {
+        return false;
+    } else {
+        q->rear++;
+        q->items[q->rear] = item;
+        return true;
+    }
+}
+
+int dequeue(Queue *q) {
+    if (isEmpty(q)) {
+        return -1;
+    } else {
+        int item = q->items[q->front];
+        q->front++;
+        if (q->front > q->rear) { // 큐가 비었다면 초기화
+            initQueue(q);
+        }
+        return item;
+    }
+}
+
+int peek(Queue *q) {
+    if (isEmpty(q)) {
+        return -1;
+    } else {
+        return q->items[q->front];
+    }
+}
+
+int main() {
+    Queue q;
+    initQueue(&q);
+    
+    enqueue(&q, 1) ? printf("Enqueued 1\n") : printf("Queue Full\n");
+    enqueue(&q, 2) ? printf("Enqueued 2\n") : printf("Queue Full\n");
+    enqueue(&q, 3) ? printf("Enqueued 3\n") : printf("Queue Full\n");
+    enqueue(&q, 4) ? printf("Enqueued 4\n") : printf("Queue Full\n");
+    
+    printf("Peek: %d\n", peek(&q));
+    
+    printf("Dequeued: %d\n", dequeue(&q));
+    printf("Dequeued: %d\n", dequeue(&q));
+    printf("Dequeued: %d\n", dequeue(&q));
+    printf("Dequeued: %d\n", dequeue(&q)); // 비어 있는 상태에서 dequeue 시도
+
+    return 0;
+}
